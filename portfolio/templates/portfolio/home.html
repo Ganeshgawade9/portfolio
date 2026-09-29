@@ -1,0 +1,596 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ profile.name }} — {{ profile.role }}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
+
+    <style>
+        .header-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 22px;
+            margin-left: auto;
+        }
+
+        .cv-card--header {
+            width: auto !important;
+            min-width: 118px !important;
+            min-height: 42px !important;
+            margin-top: 0 !important;
+            padding: 7px 10px !important;
+            gap: 8px !important;
+            border-radius: 10px !important;
+        }
+
+        .cv-card--header .cv-card__icon {
+            flex: 0 0 27px !important;
+            width: 27px !important;
+            height: 27px !important;
+            font-size: 17px !important;
+            border-radius: 7px !important;
+        }
+
+        .cv-card--header .cv-card__content {
+            gap: 2px !important;
+        }
+
+        .cv-card--header .cv-card__title {
+            font-size: 10px !important;
+        }
+
+        .cv-card--header .cv-card__subtitle {
+            font-size: 8px !important;
+        }
+
+        @media (max-width: 860px) {
+            .header-right {
+                gap: 8px;
+            }
+
+            .contact-top {
+                display: none;
+            }
+
+            .cv-card--header {
+                min-width: 100px !important;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .cv-card--header {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="avatar">
+                {% if profile.portrait %}
+                <img src="{{ profile.portrait.url }}" alt="{{ profile.name }}">
+                {% else %}
+                <img src="{% static 'images/portfolio-portrait-cutout.png' %}"
+                    alt="{{ profile.name }}">
+                {% endif %}
+            </div>
+
+            <h2>{{ profile.name }}</h2>
+
+            <p class="muted">
+                {{ profile.role }}
+            </p>
+
+            <span class="available">
+                ●
+                {% if profile.available %}
+                Available
+                {% else %}
+                Currently busy
+                {% endif %}
+            </span>
+
+            <nav aria-label="Main navigation">
+                <a class="active" href="#home">
+                    ⌂ <span>Home</span>
+                </a>
+
+                <a href="#about">
+                    ♙ <span>About</span>
+                </a>
+
+                <a href="#skills">
+                    ⌘ <span>Skills</span>
+                </a>
+
+                <a href="#experience">
+                    ▤ <span>Experience</span>
+                </a>
+
+                <a href="#portfolio">
+                    ▧ <span>Portfolio</span>
+                </a>
+
+                <a href="#contact">
+                    ◌ <span>Contact</span>
+                </a>
+            </nav>
+
+            {% if profile.resume %}
+            <a class="cv-card cv-card--sidebar"
+                href="{{ profile.resume.url }}"
+                download
+                aria-label="Download {{ profile.name }} resume">
+                <span class="cv-card__icon" aria-hidden="true">
+                    ⇩
+                </span>
+                <span class="cv-card__content">
+                    <span class="cv-card__title">
+                        Download CV
+                    </span>
+                    <span class="cv-card__subtitle">
+                        Get my resume
+                    </span>
+                </span>
+            </a>
+            {% else %}
+            <div class="cv-card cv-card--sidebar"
+                aria-label="Resume not uploaded yet">
+                <span class="cv-card__icon" aria-hidden="true">
+                    ⇩
+                </span>
+                <span class="cv-card__content">
+                    <span class="cv-card__title">
+                        Resume
+                    </span>
+                    <span class="cv-card__subtitle">
+                        Upload from Admin
+                    </span>
+                </span>
+            </div>
+            {% endif %}
+
+            <small class="copyright">
+                © 2026 {{ profile.name }}
+            </small>
+        </aside>
+
+        <section class="content">
+            <header>
+                <div class="header-right">
+                    <div class="contact-top">
+                        {% if profile.phone %}
+                        <a href="tel:{{ profile.phone|cut:' ' }}">
+                            ⌕ {{ profile.phone }}
+                        </a>
+                        {% endif %}
+
+                        <a href="mailto:{{ profile.email }}">
+                            ✉ {{ profile.email }}
+                        </a>
+                    </div>
+
+                    <div class="theme-controls"
+                        aria-label="Choose portfolio theme">
+
+                        <button class="theme-toggle"
+                            id="themeToggle"
+                            type="button"
+                            aria-label="Switch to dark theme"
+                            aria-pressed="false">
+
+                            <span class="theme-icon theme-icon-sun"
+                                aria-hidden="true">
+                                ☼
+                            </span>
+
+                            <span class="theme-icon theme-icon-moon"
+                                aria-hidden="true">
+                                ☾
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main>
+                <section id="home" class="hero">
+                    <div class="hero-copy">
+                        <span class="eyebrow">
+                            👋 HELLO!
+                        </span>
+
+                        <h1>
+                            I'm <em>{{ profile.name }}.</em>
+                        </h1>
+
+                        <p>
+                            {{ profile.summary }}
+                        </p>
+
+                        <div class="actions">
+                            <a class="button" href="#contact">
+                                Hire Me
+                            </a>
+
+                            <a class="text-link" href="#portfolio">
+                                View Works
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="hero-image">
+                        <div class="hero-circle" aria-hidden="true"></div>
+                        <div class="hero-ring" aria-hidden="true"></div>
+
+                        {% if profile.portrait %}
+                        <img class="hero-portrait"
+                            src="{{ profile.portrait.url }}"
+                            alt="{{ profile.name }} working at a laptop">
+                        {% else %}
+                        <img class="hero-portrait"
+                            src="{% static 'images/portfolio-portrait-cutout.png' %}"
+                            alt="{{ profile.name }} working at a laptop">
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section id="about" class="section">
+                    <span class="eyebrow">
+                        ABOUT ME
+                    </span>
+
+                    <div class="two-col">
+                        <h2>
+                            Building with<br>
+                            <em>purpose.</em>
+                        </h2>
+                    </div>
+
+                    <div class="about-grid">
+                        {% for card in about_cards %}
+                        <div class="about-card">
+                            <div class="about-card-top">
+                                <span class="about-card-icon">
+                                    {{ card.icon }}
+                                </span>
+                            </div>
+
+                            <strong>
+                                {{ card.title }}
+                            </strong>
+
+                            <p>
+                                {{ card.content }}
+                            </p>
+                        </div>
+                        {% empty %}
+                        <div class="about-card">
+                            Add About cards from Django Admin.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section id="skills" class="section">
+                    <span class="eyebrow">
+                        MY SKILLS
+                    </span>
+
+                    <div class="two-col">
+                        <h2>
+                            Tools I use<br>
+                            <em>to build.</em>
+                        </h2>
+                    </div>
+
+                    <div class="skill-grid">
+                        {% for skill in skills %}
+                        <div class="skill">
+                            <strong>
+                                {{ skill.name }}
+                            </strong>
+                        </div>
+                        {% empty %}
+                        <div class="skill">
+                            Add skills from Django Admin.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section id="experience" class="section">
+                    <span class="eyebrow">
+                        EXPERIENCE
+                    </span>
+
+                    <div class="timeline">
+                        {% for item in experience %}
+                        <article>
+                            <small>
+                                {{ item.period }}
+                            </small>
+
+                            <div>
+                                <h3>
+                                    {{ item.title }}
+                                </h3>
+
+                                <p>
+                                    {{ item.description }}
+                                </p>
+                            </div>
+                        </article>
+                        {% empty %}
+                        <article>
+                            <small>
+                                NOW
+                            </small>
+
+                            <div>
+                                <h3>
+                                    Learning &amp; Building
+                                </h3>
+
+                                <p>
+                                    Add your professional experience from
+                                    Django Admin.
+                                </p>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section id="portfolio" class="section">
+                    <span class="eyebrow">
+                        SELECTED WORK
+                    </span>
+
+                    <div class="two-col">
+                        <h2>
+                            Things I've<br>
+                            <em>built.</em>
+                        </h2>
+
+                        <a class="text-link" href="#contact">
+                            View all projects →
+                        </a>
+                    </div>
+
+                    <div class="projects">
+                        {% for project in projects %}
+                        <article>
+                            {% if project.image %}
+                            <img src="{{ project.image.url }}"
+                                alt="{{ project.title }}">
+                            {% else %}
+                            <div class="project-art">
+                                ✦
+                            </div>
+                            {% endif %}
+
+                            <div>
+                                <h3>
+                                    {{ project.title }}
+                                </h3>
+
+                                <p>
+                                    {{ project.short_description }}
+                                </p>
+
+                                <small>
+                                    {% for tech in project.tech_list %}
+                                    {{ tech }}{% if not forloop.last %} · {% endif %}
+                                    {% endfor %}
+                                </small>
+
+                                {% if project.live_url or project.github_url %}
+                                <div class="project-links">
+                                    {% if project.live_url %}
+                                    <a href="{{ project.live_url }}"
+                                        target="_blank"
+                                        rel="noopener">
+                                        Live Demo →
+                                    </a>
+                                    {% endif %}
+
+                                    {% if project.github_url %}
+                                    <a href="{{ project.github_url }}"
+                                        target="_blank"
+                                        rel="noopener">
+                                        Code →
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </article>
+                        {% empty %}
+                        <article>
+                            <div class="project-art">
+                                ✦
+                            </div>
+
+                            <div>
+                                <h3>
+                                    Add your first project
+                                </h3>
+
+                                <p>
+                                    Use /admin to add projects, images,
+                                    technologies, and links.
+                                </p>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section id="contact" class="contact">
+                    <div>
+                        <span class="eyebrow">
+                            CONTACT
+                        </span>
+
+                        <h2>
+                            Let's create<br>
+                            <em>something good.</em>
+                        </h2>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <input name="name"
+                            placeholder="Your name"
+                            required>
+
+                        <input type="email"
+                            name="email"
+                            placeholder="Your email"
+                            required>
+
+                        <textarea name="message"
+                            placeholder="Tell me about your project"
+                            required></textarea>
+
+                        <button class="button" type="submit">
+                            Send message →
+                        </button>
+                    </form>
+                </section>
+            </main>
+
+            <footer>
+                <span>
+                    DEVORBIT / PERSONAL PORTFOLIO
+                </span>
+
+                <a href="/admin/">
+                    Admin Control Room →
+                </a>
+            </footer>
+        </section>
+    </div>
+
+    <script>
+        (() => {
+            const storageKey = "devorbit-theme";
+            const themeToggle = document.getElementById("themeToggle");
+            const mediaQuery = window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            );
+
+            const applyTheme = (theme) => {
+                const activeTheme = ["light", "dark"].includes(theme)
+                    ? theme
+                    : "light";
+
+                document.body.dataset.theme = activeTheme;
+
+                const darkMode = activeTheme === "dark";
+
+                themeToggle.setAttribute(
+                    "aria-pressed",
+                    String(darkMode)
+                );
+
+                themeToggle.setAttribute(
+                    "aria-label",
+                    darkMode
+                        ? "Switch to light theme"
+                        : "Switch to dark theme"
+                );
+            };
+
+            const savedTheme = localStorage.getItem(storageKey);
+
+            applyTheme(
+                savedTheme || (mediaQuery.matches ? "dark" : "light")
+            );
+
+            themeToggle.addEventListener("click", () => {
+                const current = document.body.dataset.theme;
+                const next = current === "dark" ? "light" : "dark";
+
+                applyTheme(next);
+                localStorage.setItem(storageKey, next);
+            });
+        })();
+
+        (() => {
+            const navLinks = document.querySelectorAll(
+                '.sidebar nav a[href^="#"]'
+            );
+
+            const sections = Array.from(navLinks)
+                .map((link) => {
+                    return document.getElementById(
+                        link.getAttribute("href").slice(1)
+                    );
+                })
+                .filter(Boolean);
+
+            const setActive = (id) => {
+                navLinks.forEach((link) => {
+                    link.classList.toggle(
+                        "active",
+                        link.getAttribute("href") === `#${id}`
+                    );
+                });
+            };
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    const visible = entries
+                        .filter((entry) => entry.isIntersecting)
+                        .sort(
+                            (a, b) =>
+                                b.intersectionRatio -
+                                a.intersectionRatio
+                        )[0];
+
+                    if (visible) {
+                        setActive(visible.target.id);
+                    }
+                },
+                {
+                    rootMargin: "-40% 0px -50% 0px",
+                    threshold: [0, 0.25, 0.5, 0.75, 1],
+                }
+            );
+
+            sections.forEach((section) => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach((link) => {
+                link.addEventListener("click", () => {
+                    setActive(
+                        link.getAttribute("href").slice(1)
+                    );
+                });
+            });
+
+            if (window.location.hash) {
+                setActive(window.location.hash.slice(1));
+            }
+        })();
+    </script>
+</body>
+
+</html>

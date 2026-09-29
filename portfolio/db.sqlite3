@@ -1,0 +1,97 @@
+-- DevOrbit Portfolio database schema
+-- MySQL 8.0+ / MySQL Workbench compatible
+-- This file defines the application tables. Run Django migrations separately
+-- to create Django authentication, sessions, and admin tables.
+
+CREATE DATABASE IF NOT EXISTS devorbit
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE devorbit;
+
+CREATE TABLE IF NOT EXISTS portfolio_siteprofile (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(120) NOT NULL DEFAULT 'Your Name',
+    role VARCHAR(120) NOT NULL DEFAULT 'Web Developer',
+    summary LONGTEXT NOT NULL,
+    email VARCHAR(254) NOT NULL,
+    phone VARCHAR(40) NOT NULL DEFAULT '',
+    location VARCHAR(120) NOT NULL DEFAULT '',
+    portrait VARCHAR(100) NULL,
+    available TINYINT(1) NOT NULL DEFAULT 1,
+    updated_at DATETIME(6) NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS portfolio_skill (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(80) NOT NULL,
+    category VARCHAR(80) NOT NULL DEFAULT 'Core',
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    INDEX portfolio_skill_sort_idx (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS portfolio_project (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(160) NOT NULL,
+    short_description LONGTEXT NOT NULL,
+    case_study LONGTEXT NOT NULL,
+    technologies VARCHAR(255) NOT NULL DEFAULT '',
+    image VARCHAR(100) NULL,
+    github_url VARCHAR(200) NOT NULL DEFAULT '',
+    live_url VARCHAR(200) NOT NULL DEFAULT '',
+    featured TINYINT(1) NOT NULL DEFAULT 1,
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME(6) NOT NULL,
+    PRIMARY KEY (id),
+    INDEX portfolio_project_featured_idx (featured, sort_order),
+    INDEX portfolio_project_created_idx (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS portfolio_experience (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    period VARCHAR(80) NOT NULL,
+    title VARCHAR(160) NOT NULL,
+    description LONGTEXT NOT NULL,
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    INDEX portfolio_experience_sort_idx (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS portfolio_sociallink (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    label VARCHAR(50) NOT NULL,
+    url VARCHAR(200) NOT NULL,
+    icon VARCHAR(30) NOT NULL DEFAULT 'link',
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    INDEX portfolio_sociallink_sort_idx (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS portfolio_contactmessage (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(254) NOT NULL,
+    message LONGTEXT NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    is_read TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    INDEX portfolio_contact_created_idx (created_at),
+    INDEX portfolio_contact_read_idx (is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Optional starter profile row. Replace the placeholder values in Django Admin.
+INSERT INTO portfolio_siteprofile
+    (name, role, summary, email, phone, location, portrait, available, updated_at)
+SELECT
+    'Your Name',
+    'Web Developer',
+    'I create clean, modern, and useful digital experiences.',
+    'hello@yourname.com',
+    '',
+    '',
+    NULL,
+    1,
+    NOW(6)
+WHERE NOT EXISTS (SELECT 1 FROM portfolio_siteprofile);
