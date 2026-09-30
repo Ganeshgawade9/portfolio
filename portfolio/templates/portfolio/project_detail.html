@@ -1,0 +1,44 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ project.title }} — {{ profile.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
+</head>
+<body class="detail-body">
+    <main class="project-page">
+        <a class="text-link" href="{% url 'home' %}#portfolio">← Back to portfolio</a>
+
+        <h1>{{ project.title }}</h1>
+
+        {% if project.image %}
+        <img class="project-page__img" src="{{ project.image.url }}" alt="{{ project.title }}">
+        {% endif %}
+
+        <p class="project-page__tech">
+            {% for tech in project.tech_list %}{{ tech }}{% if not forloop.last %} · {% endif %}{% endfor %}
+        </p>
+
+        <p>{{ project.short_description }}</p>
+
+        {% if project.case_study %}
+        <h2>Case Study</h2>
+        <div class="project-page__body">{{ project.case_study|linebreaks }}</div>
+        {% endif %}
+
+        <div class="project-links">
+            {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener">Live Demo →</a>{% endif %}
+            {% if project.github_url %}<a href="{{ project.github_url }}" target="_blank" rel="noopener">Code →</a>{% endif %}
+        </div>
+    </main>
+
+    <script>
+        try {
+            const t = localStorage.getItem("devorbit-theme");
+            document.body.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        } catch (e) {}
+    </script>
+</body>
+</html>

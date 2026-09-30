@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env.example")
+load_dotenv(BASE_DIR / ".env")
 
 
 SECRET_KEY = os.getenv(
@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv(
     "change-me-in-production"
 )
 
-DEBUG = os.getenv("DEBUG", "1") == "1"
+DEBUG = os.getenv("DEBUG", "0") == "1"
 
 
 ALLOWED_HOSTS = [
@@ -24,6 +24,12 @@ ALLOWED_HOSTS = [
         "127.0.0.1,localhost"
     ).split(",")
     if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if o.strip()
 ]
 
 
@@ -71,34 +77,25 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv(
-            "MYSQL_DATABASE",
-            "devorbit"
-        ),
-        "USER": os.getenv(
-            "MYSQL_USER",
-            "root"
-        ),
-        "PASSWORD": os.getenv(
-            "MYSQL_PASSWORD",
-            ""
-        ),
-        "HOST": os.getenv(
-            "MYSQL_HOST",
-            "127.0.0.1"
-        ),
-        "PORT": os.getenv(
-            "MYSQL_PORT",
-            "3306"
-        ),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+if os.getenv("DB_ENGINE", "sqlite") == "mysql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("MYSQL_DATABASE", "devorbit"),
+            "USER": os.getenv("MYSQL_USER", "root"),
+            "PASSWORD": os.getenv("MYSQL_PASSWORD", ""),
+            "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
+            "PORT": os.getenv("MYSQL_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 LANGUAGE_CODE = "en-us"
@@ -125,3 +122,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Email (dev mein console mein print hoga, real email nahi jayega)
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend",
+)
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")

@@ -51,7 +51,9 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "category", "level", "sort_order")
+    list_filter = ("category",)
+    list_editable = ("category", "level", "sort_order")
 
 
 @admin.register(Experience)
@@ -67,9 +69,11 @@ class ExperienceAdmin(admin.ModelAdmin):
 class SocialLinkAdmin(admin.ModelAdmin):
     list_display = (
         "label",
+        "icon",
         "url",
         "sort_order",
     )
+    list_editable = ("sort_order",)
 
 
 @admin.register(ContactMessage)

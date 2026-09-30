@@ -1,5 +1,9 @@
 from django.db import models
-from django.core.validators import FileExtensionValidator
+from django.core.validators import (
+    FileExtensionValidator,
+    MaxValueValidator,
+    MinValueValidator,
+)
 
 
 class SiteProfile(models.Model):
@@ -63,7 +67,26 @@ class AboutCard(models.Model):
 
 
 class Skill(models.Model):
+    CATEGORY_CHOICES = [
+        ("backend", "Backend"),
+        ("frontend", "Frontend"),
+        ("database", "Database"),
+        ("tools", "Tools"),
+    ]
+
     name = models.CharField(max_length=80)
+    category = models.CharField(
+        max_length=20, choices=CATEGORY_CHOICES, default="backend"
+    )
+    level = models.PositiveSmallIntegerField(
+        default=80,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="0 se 100 ke beech",
+    )
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["category", "sort_order", "name"]
 
     def __str__(self):
         return self.name
@@ -118,9 +141,27 @@ class Experience(models.Model):
 
 
 class SocialLink(models.Model):
-    label = models.CharField(max_length=50)
-    url = models.URLField()
-    icon = models.CharField(max_length=30, default="link")
+    PLATFORM_CHOICES = [
+        ("linkedin", "LinkedIn"),
+        ("instagram", "Instagram"),
+        ("hackerrank", "HackerRank"),
+        ("github", "GitHub"),
+        ("other", "Other"),
+    ]
+
+    label = models.CharField(
+        max_length=50,
+        help_text="Text shown on the site, e.g. LinkedIn"
+    )
+    url = models.URLField(
+        help_text="Full profile link, starting with https://"
+    )
+    icon = models.CharField(
+        max_length=30,
+        choices=PLATFORM_CHOICES,
+        default="other",
+        verbose_name="Platform",
+    )
     sort_order = models.PositiveIntegerField(default=0)
 
     class Meta:
