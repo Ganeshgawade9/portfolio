@@ -68,20 +68,29 @@ class AboutCard(models.Model):
 
 class Skill(models.Model):
     CATEGORY_CHOICES = [
-        ("backend", "Backend"),
-        ("frontend", "Frontend"),
+        ("backend", "Backend Development"),
+        ("api", "API Development"),
         ("database", "Database"),
+        ("security", "Security"),
+        ("devops", "DevOps & Server"),
         ("tools", "Tools"),
+        ("testing", "Testing"),
+        ("frontend", "Frontend Integration"),
     ]
 
     name = models.CharField(max_length=80)
     category = models.CharField(
         max_length=20, choices=CATEGORY_CHOICES, default="backend"
     )
+    icon = models.CharField(
+        max_length=60,
+        blank=True,
+        help_text="Icon CSS class, e.g. devicon-python-plain or fa-solid fa-key",
+    )
     level = models.PositiveSmallIntegerField(
         default=80,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="0 se 100 ke beech",
+        help_text="0 se 100 ke beech (ab design me use nahi hota)",
     )
     sort_order = models.PositiveIntegerField(default=0)
 
@@ -89,7 +98,7 @@ class Skill(models.Model):
         ordering = ["category", "sort_order", "name"]
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.get_category_display()})"
 
 
 class Project(models.Model):
@@ -126,18 +135,81 @@ class Project(models.Model):
             if item.strip()
         ]
 
+TECH_ICONS = {
+    "python": "fa-solid fa-code",
+    "django": "devicon-django-plain",
+    "drf": "fa-solid fa-layer-group",
+    "django rest framework": "fa-solid fa-layer-group",
+    "mysql": "fa-solid fa-database",
+    "database": "fa-solid fa-database",
+    "sql": "fa-solid fa-database",
+    "jwt": "fa-solid fa-shield-halved",
+    "web development": "fa-solid fa-globe",
+    "rest api": "fa-solid fa-link",
+    "html": "devicon-html5-plain",
+    "css": "devicon-css3-plain",
+    "javascript": "devicon-javascript-plain",
+    "docker": "devicon-docker-plain",
+    "git": "devicon-git-plain",
+    "github": "devicon-github-original",
+    "linux": "devicon-linux-plain",
+}
+DEFAULT_TECH_ICON = "fa-solid fa-code"
+
 
 class Experience(models.Model):
-    period = models.CharField(max_length=80)
-    title = models.CharField(max_length=160)
-    description = models.TextField()
+    KIND_CHOICES = [
+        ("experience", "Experience"),
+        ("education", "Education"),
+    ]
+
+    kind = models.CharField(
+        max_length=12, choices=KIND_CHOICES, default="experience"
+    )
+    period = models.CharField(
+        max_length=80, help_text="e.g. 2023 - 2026 ya 2026 - Present"
+    )
+    title = models.CharField(
+        max_length=160, help_text="e.g. Python Developer ya Bachelor's Degree"
+    )
+    organization = models.CharField(
+        max_length=160, blank=True, help_text="College / Company name (optional)"
+    )
+    field = models.CharField(
+        max_length=160, blank=True, help_text="e.g. Computer Science / IT (optional)"
+    )
+    description = models.TextField(blank=True)
+    technologies = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Comma-separated, e.g. Python, Django, DRF, MySQL, JWT",
+    )
     sort_order = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ["sort_order"]
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.period})"
+
+    @property
+    def kind_icon(self):
+        return (
+            "fa-solid fa-graduation-cap"
+            if self.kind == "education"
+            else "fa-solid fa-briefcase"
+        )
+
+    @property
+    def tech_list(self):
+        return [
+            {
+                "name": name,
+                "icon": TECH_ICONS.get(name.lower(), DEFAULT_TECH_ICON),
+            }
+            for name in (t.strip() for t in self.technologies.split(","))
+            if name
+        ]
 
 
 class SocialLink(models.Model):

@@ -17,6 +17,8 @@
     />
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css" />
 
     <link rel="stylesheet" href="{% static 'css/portfolio.css' %}" />
 
@@ -161,13 +163,19 @@
         <a
           class="cv-card cv-card--sidebar"
           href="{{ profile.resume.url }}"
-          download
-          aria-label="Download {{ profile.name }} resume"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="View {{ profile.name }} resume"
         >
-          <span class="cv-card__icon" aria-hidden="true"> ⇩ </span>
+          <span class="cv-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </span>
           <span class="cv-card__content">
-            <span class="cv-card__title"> Download CV </span>
-            <span class="cv-card__subtitle"> Get my resume </span>
+            <span class="cv-card__title"> View CV </span>
+            <span class="cv-card__subtitle"> Open my resume </span>
           </span>
         </a>
         {% else %}
@@ -195,8 +203,8 @@
             {% if link.icon == "linkedin" %}
             <svg
               viewBox="0 0 24 24"
-              width="20"
-              height="20"
+              width="16"
+              height="16"
               fill="currentColor"
               fill-rule="evenodd"
               aria-hidden="true"
@@ -209,8 +217,8 @@
             {% elif link.icon == "github" %}
             <svg
               viewBox="0 0 24 24"
-              width="20"
-              height="20"
+              width="16"
+              height="16"
               fill="currentColor"
               fill-rule="evenodd"
               aria-hidden="true"
@@ -223,8 +231,8 @@
             {% elif link.icon == "hackerrank" %}
             <svg
               viewBox="0 0 24 24"
-              width="20"
-              height="20"
+              width="16"
+              height="16"
               fill="currentColor"
               fill-rule="evenodd"
               aria-hidden="true"
@@ -291,12 +299,6 @@
                 <a class="button" href="#contact"> Hire Me </a>
 
                 <a class="text-link" href="#portfolio"> View Works </a>
-
-                {% if profile.resume %}
-                <a class="text-link" href="{{ profile.resume.url }}" download>
-                  Download CV ↓
-                </a>
-                {% endif %}
               </div>
             </div>
 
@@ -341,62 +343,68 @@
           </section>
 
           <section id="skills" class="section">
-            <span class="eyebrow"> MY SKILLS </span>
-
-            <div class="two-col">
-              <h2>
-                Tools I use<br />
-                <em>to build.</em>
-              </h2>
-            </div>
-
-            {% regroup skills by get_category_display as skill_groups %} {% for group in skill_groups %}
-            <h3 class="skill-group-title">{{ group.grouper }}</h3>
-            <div class="skill-grid">
-              {% for skill in group.list %}
-              <div class="skill">
-                <strong>{{ skill.name }}</strong>
-                <div
-                  class="skill-bar"
-                  role="progressbar"
-                  aria-valuenow="{{ skill.level }}"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >
-                  <i style="width: {{ skill.level }}%"></i>
+            <span class="eyebrow">MY SKILLS</span>
+            <div class="sk-grid">
+              {% for group in skill_groups %}
+              <article class="sk-card">
+                <div class="sk-card__head">
+                  <span class="sk-card__icon"><i class="{{ group.icon }}" aria-hidden="true"></i></span>
+                  <h3>{{ group.title }}</h3>
+                  <i class="sk-card__corner {{ group.corner_icon }}" aria-hidden="true"></i>
                 </div>
-              </div>
+
+                <div class="sk-chips">
+                  {% for skill in group.skills %}
+                  <span class="sk-chip">
+                    {% if skill.icon %}<i class="{{ skill.icon }}" aria-hidden="true"></i>{% endif %}
+                    {{ skill.name }}
+                  </span>
+                  {% endfor %}
+                </div>
+              </article>
+              {% empty %}
+              <article class="sk-card">Add skills from Django Admin.</article>
               {% endfor %}
             </div>
-            {% empty %}
-            <div class="skill-grid">
-              <div class="skill">Add skills from Django Admin.</div>
-            </div>
-            {% endfor %}
           </section>
 
           <section id="experience" class="section">
             <span class="eyebrow"> EXPERIENCE </span>
 
-            <div class="timeline">
+            <div class="xp-timeline">
               {% for item in experience %}
-              <article>
-                <small> {{ item.period }} </small>
+              <article class="xp-item">
+                <div class="xp-period">{{ item.period }}</div>
 
-                <div>
+                <div class="xp-rail" aria-hidden="true"><span class="xp-dot"></span></div>
+
+                <div class="xp-icon"><i class="{{ item.kind_icon }}" aria-hidden="true"></i></div>
+
+                <div class="xp-body">
+                  <span class="xp-kind">{{ item.get_kind_display }}</span>
                   <h3>{{ item.title }}</h3>
+                  {% if item.organization %}<p class="xp-org">{{ item.organization }}</p>{% endif %}
+                  {% if item.field %}<p class="xp-field">{{ item.field }}</p>{% endif %}
+                  {% if item.description %}<p class="xp-desc">{{ item.description }}</p>{% endif %}
 
-                  <p>{{ item.description }}</p>
+                  {% if item.tech_list %}
+                  <div class="xp-chips">
+                    {% for tech in item.tech_list %}
+                    <span class="xp-chip"><i class="{{ tech.icon }}" aria-hidden="true"></i>{{ tech.name }}</span>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
                 </div>
               </article>
               {% empty %}
-              <article>
-                <small> NOW </small>
-
-                <div>
+              <article class="xp-item">
+                <div class="xp-period">NOW</div>
+                <div class="xp-rail" aria-hidden="true"><span class="xp-dot"></span></div>
+                <div class="xp-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></div>
+                <div class="xp-body">
+                  <span class="xp-kind">Experience</span>
                   <h3>Learning &amp; Building</h3>
-
-                  <p>Add your professional experience from Django Admin.</p>
+                  <p class="xp-desc">Add your experience from Django Admin.</p>
                 </div>
               </article>
               {% endfor %}
@@ -404,25 +412,7 @@
           </section>
 
           <section id="portfolio" class="section">
-            <span class="eyebrow"> SELECTED WORK </span>
-
-            <div class="two-col">
-              <h2>
-                Things I've<br />
-                <em>built.</em>
-              </h2>
-
-              {% for link in social_links %} {% if link.icon == "github" %}
-              <a
-                class="text-link"
-                href="{{ link.url }}"
-                target="_blank"
-                rel="noopener"
-              >
-                View all on GitHub →
-              </a>
-              {% endif %} {% endfor %}
-            </div>
+            <span class="eyebrow"> PROJECTS </span>
 
             <div class="projects">
               {% for project in projects %}

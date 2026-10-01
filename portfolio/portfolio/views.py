@@ -15,6 +15,41 @@ from .models import (
     SocialLink,
 )
 
+SKILL_CATEGORY_ICONS = {
+    # key: (card icon, corner icon)
+    "backend": ("fa-brands fa-python", "fa-solid fa-code"),
+    "api": ("fa-solid fa-plug", "fa-solid fa-cloud-arrow-up"),
+    "database": ("fa-solid fa-database", "fa-solid fa-database"),
+    "security": ("fa-solid fa-shield-halved", "fa-solid fa-shield-halved"),
+    "devops": ("fa-solid fa-server", "fa-solid fa-infinity"),
+    "tools": ("fa-solid fa-screwdriver-wrench", "fa-solid fa-wrench"),
+    "testing": ("fa-solid fa-flask", "fa-solid fa-flask"),
+    "frontend": ("fa-solid fa-desktop", "fa-solid fa-desktop"),
+}
+
+
+def build_skill_groups():
+    """Skills ko CATEGORY_CHOICES ke order me group karta hai (khaali category skip)."""
+    buckets = {key: [] for key, _ in Skill.CATEGORY_CHOICES}
+    for skill in Skill.objects.order_by("sort_order", "name"):
+        buckets.setdefault(skill.category, []).append(skill)
+
+    groups = []
+    for key, label in Skill.CATEGORY_CHOICES:
+        if buckets.get(key):
+            icon, corner = SKILL_CATEGORY_ICONS.get(
+                key, ("fa-solid fa-code", "fa-solid fa-code")
+            )
+            groups.append(
+                {
+                    "key": key,
+                    "title": label,
+                    "icon": icon,
+                    "corner_icon": corner,
+                    "skills": buckets[key],
+                }
+            )
+    return groups
 
 def home(request):
     profile = SiteProfile.objects.first() or SiteProfile()
@@ -48,6 +83,7 @@ def home(request):
         "form": form,
         "about_cards": AboutCard.objects.all(),
         "skills": Skill.objects.order_by("category", "sort_order", "name"),
+        "skill_groups": build_skill_groups(),
         "projects": Project.objects.filter(featured=True),
         "experience": Experience.objects.all(),
         "social_links": SocialLink.objects.all(),
